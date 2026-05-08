@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HTML5 Canvas Drawing App</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f4f4f4;
+        margin: 20px;
+    }
+
+    h1{
+        margin-bottom: 15px;
+    }
+
+    .tools{
+        margin-bottom: 15px;
+    }
+
+    button, input{
+        padding: 8px 12px;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    canvas{
+        border: 2px solid black;
+        background: white;
+        cursor: crosshair;
+    }
+</style>
+</head>
+<body>
+
+<h1>Interactive Drawing Application</h1>
+
+<div class="tools">
+    <!-- Color Picker -->
+    <label>Brush Color:</label>
+    <input type="color" id="colorPicker" value="#000000">
+
+    <!-- Brush Size -->
+    <label>Brush Size:</label>
+    <input type="range" id="brushSize" min="1" max="20" value="5">
+
+    <!-- Clear Button -->
+    <button id="clearCanvas">Clear Canvas</button>
+</div>
+
+<!-- Canvas -->
+<canvas id="drawingCanvas" width="800" height="500"></canvas>
+
+<script>
+    const canvas = document.getElementById("drawingCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const colorPicker = document.getElementById("colorPicker");
+    const brushSize = document.getElementById("brushSize");
+    const clearCanvas = document.getElementById("clearCanvas");
+
+    let drawing = false;
+
+    // Start Drawing
+    canvas.addEventListener("mousedown", (e) => {
+        drawing = true;
+        draw(e);
+    });
+
+    // Stop Drawing
+    canvas.addEventListener("mouseup", () => {
+        drawing = false;
+        ctx.beginPath();
+    });
+
+    // Stop if mouse leaves canvas
+    canvas.addEventListener("mouseleave", () => {
+        drawing = false;
+        ctx.beginPath();
+    });
+
+    // Draw on mouse move
+    canvas.addEventListener("mousemove", draw);
+
+    function draw(e) {
+        if (!drawing) return;
+
+        ctx.lineWidth = brushSize.value;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = colorPicker.value;
+
+        const rect = canvas.getBoundingClientRect();
+
+        ctx.lineTo(
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        );
+
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        );
+    }
+
+    // Clear Canvas
+    clearCanvas.addEventListener("click", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+</script>
+
+</body>
+</html>
